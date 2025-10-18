@@ -1,0 +1,19 @@
+name: Frontend CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Deploy Frontend Container
+        run: |
+          cd /home/ubuntu/chat-app
+          docker-compose down frontend
+          docker-compose up -d --build frontend
