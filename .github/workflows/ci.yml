@@ -12,17 +12,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install Node
+      - name: Set up Node
         uses: actions/setup-node@v3
         with:
           node-version: "18"
 
       - name: Install Dependencies
         run: |
-          cd /home/ubuntu/chat-app/frontend
+          cd frontend/_work/chat_app_frontend/chat_app_frontend
           npm ci
 
       - name: Build Frontend
         run: |
-          cd /home/ubuntu/chat-app/frontend
+          cd frontend/_work/chat_app_frontend/chat_app_frontend
           npm run build
