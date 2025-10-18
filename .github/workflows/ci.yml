@@ -19,10 +19,10 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          cd /home/ubuntu/chat-app/frontend/_work/chat_app_frontend/chat_app_frontend
+          cd ${{ github.workspace }}
           npm ci --legacy-peer-deps
 
       - name: Build Frontend
         run: |
-          cd /home/ubuntu/chat-app/frontend/_work/chat_app_frontend/chat_app_frontend
+          cd ${{ github.workspace }}
           npm run build
