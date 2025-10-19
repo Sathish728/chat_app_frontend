@@ -3,8 +3,7 @@ name: Frontend CD
 on:
   workflow_run:
     workflows: ["Frontend CI"]
-    types:
-      - completed
+    types: [completed]
     branches: [main]
 
 jobs:
@@ -17,24 +16,37 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Complete Frontend Cleanup
+      - name: Ensure Network Exists
+        run: docker network create chat-app_default 2>/dev/null || true
+
+      - name: Stop and Remove Old Frontend
         run: |
-          cd /home/ubuntu/chat-app
-          docker-compose stop frontend 2>/dev/null || true
+          docker stop chat-app_frontend_1 2>/dev/null || true
           docker rm -f chat-app_frontend_1 2>/dev/null || true
           docker rmi -f chat-app_frontend 2>/dev/null || true
-          docker container prune -f
-          docker image prune -f
 
       - name: Build Frontend
         run: |
           cd /home/ubuntu/chat-app
           docker-compose build --no-cache frontend
 
+      - name: Ensure Dependencies Running
+        run: |
+          if ! docker ps | grep -q chat-app_backend_1; then
+            echo "⚠️ Backend not running, starting it..."
+            docker start chat-app_backend_1 || true
+            sleep 5
+          fi
+
       - name: Deploy Frontend
         run: |
-          cd /home/ubuntu/chat-app
-          docker-compose up -d --force-recreate frontend
+          docker run -d \
+            --name chat-app_frontend_1 \
+            --network chat-app_default \
+            -p 3000:3000 \
+            --env-file /home/ubuntu/chat-app/frontend/.env.prod \
+            --restart unless-stopped \
+            chat-app_frontend
 
       - name: Verify Deployment
         run: |
