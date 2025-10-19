@@ -3,11 +3,14 @@ name: Frontend CI
 on:
   push:
     branches: [main]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/ci-frontend.yml"
 
 jobs:
   build:
     runs-on: self-hosted
-    timeout-minutes: 15
+    timeout-minutes: 5
 
     steps:
       - name: Checkout code
@@ -18,14 +21,8 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Clean and Install Dependencies
+      - name: Install Dependencies
         run: |
           cd /home/ubuntu/chat-app/frontend/_work/chat_app_frontend/chat_app_frontend
           rm -rf node_modules package-lock.json
           npm install --legacy-peer-deps --force
-
-      - name: Build Frontend with Memory Limit
-        run: |
-          cd /home/ubuntu/chat-app/frontend/_work/chat_app_frontend/chat_app_frontend
-          NODE_OPTIONS="--max-old-space-size=2048" npm run build
-        timeout-minutes: 10

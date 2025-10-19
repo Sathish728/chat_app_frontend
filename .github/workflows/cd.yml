@@ -17,28 +17,27 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Verify Dockerfile exists
-        run: |
-          if [ ! -f /home/ubuntu/chat-app/frontend/_work/chat_app_frontend/chat_app_frontend/Dockerfile ]; then
-            echo "ERROR: Dockerfile not found!"
-            exit 1
-          fi
-          echo "Dockerfile found ✓"
-
-      - name: Stop and Clean Old Containers
+      - name: Complete Frontend Cleanup
         run: |
           cd /home/ubuntu/chat-app
-          docker-compose down frontend || true
+          docker-compose stop frontend 2>/dev/null || true
+          docker rm -f chat-app_frontend_1 2>/dev/null || true
+          docker rmi -f chat-app_frontend 2>/dev/null || true
+          docker container prune -f
           docker image prune -f
 
-      - name: Build and Deploy Frontend
+      - name: Build Frontend
         run: |
           cd /home/ubuntu/chat-app
           docker-compose build --no-cache frontend
-          docker-compose up -d frontend
+
+      - name: Deploy Frontend
+        run: |
+          cd /home/ubuntu/chat-app
+          docker-compose up -d --force-recreate frontend
 
       - name: Verify Deployment
         run: |
           sleep 15
           docker ps | grep frontend
-          docker logs $(docker ps -q -f name=frontend) --tail 100
+          docker logs chat-app_frontend_1 --tail 100
