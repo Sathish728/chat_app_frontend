@@ -7,6 +7,7 @@ on:
 jobs:
   build:
     runs-on: self-hosted
+    timeout-minutes: 15
 
     steps:
       - name: Checkout code
@@ -23,7 +24,8 @@ jobs:
           rm -rf node_modules package-lock.json
           npm install --legacy-peer-deps --force
 
-      - name: Build Frontend
+      - name: Build Frontend with Memory Limit
         run: |
           cd /home/ubuntu/chat-app/frontend/_work/chat_app_frontend/chat_app_frontend
-          npm run build
+          NODE_OPTIONS="--max-old-space-size=2048" npm run build
+        timeout-minutes: 10
