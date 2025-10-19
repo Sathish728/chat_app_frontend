@@ -17,12 +17,13 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Install Dependencies
+      - name: Clean and Install Dependencies
         run: |
-          cd ${{ github.workspace }}
-          npm ci --legacy-peer-deps
+          cd /home/ubuntu/chat-app/frontend/_work/chat_app_frontend/chat_app_frontend
+          rm -rf node_modules package-lock.json
+          npm install --legacy-peer-deps --force
 
       - name: Build Frontend
         run: |
-          cd ${{ github.workspace }}
+          cd /home/ubuntu/chat-app/frontend/_work/chat_app_frontend/chat_app_frontend
           npm run build

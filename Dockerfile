@@ -1,26 +1,27 @@
-# Use official Node 18 image
-FROM node:20
+# Use Node 20 Alpine for smaller image
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json first
+# Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies with flags to handle deprecated packages
+RUN npm install --legacy-peer-deps --force && \
+    npm cache clean --force
 
-# Copy all frontend source files
+# Copy all source files
 COPY . .
 
-# Build the production-ready React app
+# Build the production app
 RUN npm run build
 
-# Install a static server globally
+# Install serve globally
 RUN npm install -g serve
 
-# Expose frontend port
+# Expose port
 EXPOSE 3000
 
-# Serve the built app
+# Start the application
 CMD ["serve", "-s", "dist", "-l", "3000"]

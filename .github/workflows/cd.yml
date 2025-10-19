@@ -1,19 +1,38 @@
 name: Frontend CD
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Frontend CI"]
+    types:
+      - completed
     branches: [main]
 
 jobs:
   deploy:
     runs-on: self-hosted
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Stop Frontend Container
+        run: |
+          cd /home/ubuntu/chat-app
+          docker-compose down frontend || true
+
+      - name: Remove Old Images
+        run: |
+          docker rmi chat-app-frontend || true
+
       - name: Deploy Frontend Container
         run: |
           cd /home/ubuntu/chat-app
-          docker-compose down
-          docker-compose up -d --build frontend
+          docker-compose build --no-cache frontend
+          docker-compose up -d frontend
+
+      - name: Check Deployment
+        run: |
+          sleep 10
+          docker ps | grep frontend
+          docker logs chat-app-frontend-1 --tail 50
