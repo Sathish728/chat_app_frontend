@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { logoutUser } from '../slice/authSlice';
 
 const LogoutButton = ({ className = '', showConfirmation = true }) => {

@@ -1,7 +1,7 @@
 // components/UserMenu.jsx - Dropdown menu with logout
 import { useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import LogoutButton from './LogoutButton';
 
 const UserMenu = () => {

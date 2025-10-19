@@ -2,7 +2,7 @@ import { ShipWheelIcon} from 'lucide-react'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { replace, useNavigate } from 'react-router';
+import { replace, useNavigate } from 'react-router-dom';
 import {loginUser, clearError, clearMessage} from '../slice/authSlice'
 import { Link } from 'react-router';
 import { toast } from 'react-toastify';

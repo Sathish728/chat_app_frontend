@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
 import { clearError, clearMessage, onBoard } from '../slice/authSlice'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { LANGUAGES } from '../constants/Index'
 
 const OnboardingPage = () => {

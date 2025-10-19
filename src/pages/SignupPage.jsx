@@ -1,6 +1,6 @@
 import  { useEffect, useState } from 'react'
 import { ShipWheelIcon} from 'lucide-react'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {toast} from 'react-toastify'
 import { useNavigate } from 'react-router'

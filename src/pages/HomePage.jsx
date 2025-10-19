@@ -7,7 +7,7 @@ import {
   getOutgoingFriendRequests,
   sendFriendRequest,
 } from "../slice/friendSlice";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import {
   CheckCircleIcon,
   MapPinIcon,
