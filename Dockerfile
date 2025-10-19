@@ -1,27 +1,29 @@
-# Use Node 20 Alpine for smaller image
 FROM node:20-alpine
 
-# Set working directory
+
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies with flags to handle deprecated packages
+# Install dependencies
 RUN npm install --legacy-peer-deps --force && \
     npm cache clean --force
 
-# Copy all source files
+# Copy source files
 COPY . .
 
-# Build the production app
+# Set memory limit for build
+ENV NODE_OPTIONS="--max-old-space-size=1536"
+
+# Build the app
 RUN npm run build
 
-# Install serve globally
+# Install serve
 RUN npm install -g serve
 
-# Expose port
+
 EXPOSE 3000
 
-# Start the application
+
 CMD ["serve", "-s", "dist", "-l", "3000"]

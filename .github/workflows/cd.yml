@@ -10,29 +10,35 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
+    timeout-minutes: 20
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Stop Frontend Container
+      - name: Verify Dockerfile exists
+        run: |
+          if [ ! -f /home/ubuntu/chat-app/frontend/_work/chat_app_frontend/chat_app_frontend/Dockerfile ]; then
+            echo "ERROR: Dockerfile not found!"
+            exit 1
+          fi
+          echo "Dockerfile found ✓"
+
+      - name: Stop and Clean Old Containers
         run: |
           cd /home/ubuntu/chat-app
           docker-compose down frontend || true
+          docker image prune -f
 
-      - name: Remove Old Images
-        run: |
-          docker rmi chat-app-frontend || true
-
-      - name: Deploy Frontend Container
+      - name: Build and Deploy Frontend
         run: |
           cd /home/ubuntu/chat-app
           docker-compose build --no-cache frontend
           docker-compose up -d frontend
 
-      - name: Check Deployment
+      - name: Verify Deployment
         run: |
-          sleep 10
+          sleep 15
           docker ps | grep frontend
-          docker logs chat-app-frontend-1 --tail 50
+          docker logs $(docker ps -q -f name=frontend) --tail 100
