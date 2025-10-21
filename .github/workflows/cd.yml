@@ -25,17 +25,22 @@ jobs:
           docker rm -f chat-app_frontend_1 2>/dev/null || true
           docker rmi -f chat-app_frontend 2>/dev/null || true
 
-      - name: Build Frontend
+      - name: Build Frontend with GitHub Secrets
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_STREAM_API_KEY: ${{ secrets.VITE_STREAM_API_KEY }}
         run: |
-          cd /home/ubuntu/chat-app
-          docker-compose build --no-cache frontend
+          cd /home/ubuntu/chat-app/frontend/_work/chat_app_frontend/chat_app_frontend
+          docker build --no-cache \
+            --build-arg VITE_API_URL="${VITE_API_URL}" \
+            --build-arg VITE_STREAM_API_KEY="${VITE_STREAM_API_KEY}" \
+            -t chat-app_frontend .
 
-      - name: Ensure Dependencies Running
+      - name: Ensure Backend Running
         run: |
           if ! docker ps | grep -q chat-app_backend_1; then
-            echo "⚠️ Backend not running, starting it..."
-            docker start chat-app_backend_1 || true
-            sleep 5
+          docker start chat-app_backend_1 || true
+          sleep 5
           fi
 
       - name: Deploy Frontend
@@ -44,7 +49,6 @@ jobs:
             --name chat-app_frontend_1 \
             --network chat-app_default \
             -p 3000:3000 \
-            --env-file /home/ubuntu/chat-app/frontend/.env.prod \
             --restart unless-stopped \
             chat-app_frontend
 
